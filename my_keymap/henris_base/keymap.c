@@ -8,12 +8,68 @@ enum layer_names {
     navigation,
 };
 
+enum custom_keycodes { 
+  MO_CUSTOM_F = SAFE_RANGE,
+  MO_CUSTOM_J,
+};
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) { 
+  switch (keycode) { 
+    case MT(MOD_LALT, KC_A): 
+	  return 300; 
+
+    case MT(MOD_LCTL, KC_S): 
+      return 250; 
+
+    case LT(navigation, KC_D): 
+      return 200; 
+
+    case LT(custom_signs, KC_F): 
+      return 170; 
+
+    case LT(custom_signs, KC_J): 
+      return 170; 
+
+    case LT(navigation, KC_K): 
+      return 200; 
+
+    case MT(MOD_LCTL, KC_L): 
+      return 250; 
+
+    case MT(MOD_LALT, DE_ODIA): 
+      return 300; 
+
+    default: 
+      return 200; 
+  }
+}
+
+
+
+bool caps_word_press_user(uint16_t keycode) {
+  switch (keycode) {
+    case KC_A ... KC_Z:
+      add_weak_mods(MOD_BIT(KC_LSFT));
+      return true; 
+
+    case DE_MINS:
+      add_weak_mods(MOD_BIT(KC_LSFT));
+      return true;
+
+    case KC_BSPC:
+      return true;
+
+    default: 
+      return false; 
+  }
+}
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [base] = LAYOUT_ergodox_pretty(
     KC_DOT,  KC_1, KC_2, KC_3, KC_4, KC_5, KC_PSCR,              KC_NO,  KC_6, KC_7, KC_8, KC_9, KC_0, DE_SS,
     KC_TAB,  KC_Q, KC_W, KC_E, KC_R, KC_T, KC_NO,                  KC_NO,  KC_Y, KC_U, KC_I, KC_O, KC_P, DE_UDIA,
-    KC_ESC,  MT(MOD_LCTL, KC_A), KC_S, LT(navigation, KC_D), LT(custom_signs, KC_F), KC_G,                          KC_H,  LT(custom_signs, KC_J), LT(navigation, KC_K), KC_L, MT(MOD_LCTL, DE_ODIA), DE_ADIA,
+    KC_ESC,  MT(MOD_LALT, KC_A), MT(MOD_LCTL, KC_S), LT(navigation, KC_D), MO_CUSTOM_F, KC_G,                          KC_H,  MO_CUSTOM_J, LT(navigation, KC_K), MT(MOD_LCTL, KC_L), MT(MOD_LALT, DE_ODIA), DE_ADIA,
     KC_LGUI, MT(MOD_LCTL, KC_Z), KC_X, KC_C, KC_V, KC_B, KC_NO,   KC_NO, KC_N, KC_M, KC_COMMA, KC_DOT, MT(MOD_LCTL, DE_MINS), KC_LGUI,
 
     KC_LALT, KC_GRAVE, KC_QUOTE, KC_NO, KC_NO,          KC_NO, KC_NO, KC_NO, KC_NO, KC_RALT,
@@ -39,7 +95,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
                                         KC_NO, KC_NO,
 
-    OSM(MOD_LSFT), KC_BSPC, KC_DEL, KC_PGDN, KC_ENT, KC_SPC
+    CW_TOGG, KC_BSPC, KC_DEL, KC_PGDN, KC_ENT, KC_SPC
 ),
 
 [navigation] = LAYOUT_ergodox_pretty(
@@ -61,8 +117,39 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 // --- SAFE VERSION (no RGB, no crash) ---
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    return true;
+static bool layer_used = false; 
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) { 
+  if (record->event.pressed && layer_state_is(custom_signs)) { 
+    layer_used = true; 
+  }
+
+  switch (keycode) { 
+    case MO_CUSTOM_F: 
+      if (record->event.pressed) { 
+        layer_used = false; 
+        layer_on(custom_signs); 
+      } else { 
+          layer_off(custom_signs); 
+          if (!layer_used) { 
+            tap_code(KC_F); 
+          }
+      }
+      return false; 
+
+  case MO_CUSTOM_J: 
+    if (record->event.pressed) {
+      layer_used = false; 
+      layer_on(custom_signs); 
+    } else {
+        layer_off(custom_signs); 
+        if (!layer_used) { 
+          tap_code(KC_J); 
+        }
+    }
+    return false; 
+  }
+  return true; 
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
