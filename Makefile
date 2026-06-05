@@ -6,7 +6,7 @@ CONFIG_FILE = qmk_firmware/keyboards/ergodox_ez/config.h
 HARDWARE = ergodox_ez/glow
 MMCU = atmega32u4
 
-Makeflags += no-print-directory
+MAKEFLAGS += --no-print-directory
  
 .PHONY: edit compile compiledb sync restore_default flash 
 
@@ -27,7 +27,7 @@ compiledb: sync
 restore_default: 
 	@rsync -av default/default/ $(KEYBOARD_DEFAULT_FOLDER)
 	@rsync -av default/default/config.h $(CONFIG_FILE)
-	@cd qmk_firmware && git restore .
+	@cd qmk_firmware && rm keyboards/ergodox_ez/glow/keymaps/default/config.h && git restore .
 
 flash: compile 
 	@echo 'Press bootloader button to flash...'
