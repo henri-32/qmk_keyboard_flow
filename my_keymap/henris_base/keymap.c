@@ -13,6 +13,7 @@ enum layer_names {
 enum custom_keycodes { 
   MO_CUSTOM_F = SAFE_RANGE,
   MO_CUSTOM_J,
+  CC_NL,
 };
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) { 
@@ -24,7 +25,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
       return 250; 
 
     case LT(navigation, KC_D): 
-      return 200; 
+      return 250; 
 
     case LT(custom_signs, KC_F): 
       return 150; 
@@ -33,7 +34,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
       return 150; 
 
     case LT(navigation, KC_K): 
-      return 200; 
+      return 250; 
 
     case MT(MOD_LCTL, KC_L): 
       return 250; 
@@ -88,7 +89,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_ESC, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_TRNS,             KC_TRNS, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11,
     KC_TRNS, DE_QUES, S(DE_HASH), KC_ESC, DE_AMPR, KC_TAB, KC_TRNS,  KC_TRNS, KC_TRNS, DE_LCBR, DE_RCBR, DE_DQUO, DE_PLUS, DE_ASTR,
     KC_TRNS, DE_AT, DE_DLR, DE_PERC, DE_SLSH, DE_HASH,              DE_LABK, DE_LPRN, DE_RPRN, DE_RABK, DE_EQL, KC_SLASH,
-    KC_TRNS, KC_TRNS, KC_TRNS, DE_BSLS, DE_TILD, KC_TRNS, KC_TRNS,      KC_TRNS, KC_TRNS, DE_LBRC, DE_RBRC, DE_PIPE, DE_EXLM,KC_TRNS,
+    KC_TRNS, KC_TRNS, KC_TRNS, DE_BSLS, DE_TILD, KC_TRNS, KC_TRNS,      KC_TRNS, CC_NL, DE_LBRC, DE_RBRC, DE_PIPE, DE_EXLM,KC_TRNS,
 
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
 
@@ -102,9 +103,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [navigation] = LAYOUT_ergodox_pretty(
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-    KC_TRNS, C(KC_W), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-    KC_TRNS, KC_LALT, C(KC_PGUP), C(KC_PGDN), LALT(KC_TAB), KC_TRNS,  KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, KC_F11, KC_TRNS,
-		KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, C(KC_T), KC_MPRV, KC_MNXT, KC_TRNS, KC_TRNS, KC_TRNS,
+    KC_TRNS,KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+    KC_TRNS, KC_TRNS, C(KC_PGUP), C(KC_PGDN), LALT(KC_TAB), KC_TRNS,  KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, KC_F11, KC_TRNS,
+		KC_TRNS, KC_TRNS, C(KC_W), KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, C(KC_T), KC_MPRV, KC_MNXT, KC_TRNS, KC_TRNS, KC_TRNS,
 
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,           KC_VOLU, KC_VOLD, KC_MUTE, KC_TRNS, KC_NO,
 
@@ -170,16 +171,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false; 
 
-  case MO_CUSTOM_J: 
-    if (record->event.pressed) {
-      layer_used = false; 
-      layer_on(custom_signs); 
-    } else {
-        layer_off(custom_signs); 
-        if (!layer_used) { 
-          tap_code(KC_J); 
-        }
-    }
+    case MO_CUSTOM_J: 
+      if (record->event.pressed) {
+		layer_used = false; 
+		layer_on(custom_signs); 
+		} else {
+		  layer_off(custom_signs); 
+		  if (!layer_used) { 
+			  tap_code(KC_J); 
+			}
+		}
+    return false; 
+ 
+    case CC_NL: 
+      if (record->event.pressed) { 
+        tap_code16(DE_BSLS); 
+        tap_code(KC_N);
+      }
     return false; 
   }
   return true; 
