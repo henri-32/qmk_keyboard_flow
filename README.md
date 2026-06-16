@@ -1,6 +1,4 @@
-# qmk_keyboard_flow
-=======
-# Henri's ErgoDox EZ Glow Keymap
+
 
 Kurzanleitung zum Bauen und Flashen der Keymap `henris_base`.
 
@@ -40,10 +38,10 @@ qmk flash -kb zsa/ergodox_ez/m32u4/glow -km henris_base
 
 ## Hinweis zu STM32
 
-Falls die Tastatur eine neuere STM32-Version ist, waere das Target:
+Falls die Tastatur eine neuere STM32-Version ist, wäre das Target:
 
 ```bash
 qmk compile -kb zsa/ergodox_ez/stm32/glow -km henris_base
 ```
 
-Dafuer muss `arm-none-eabi-gcc` installiert sein.
+Dafür muss `arm-none-eabi-gcc` installiert sein.
